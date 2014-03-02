@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ServiceQueue.Core.Model.Entity;
-
-namespace ServiceQueue.Core.Business
+﻿namespace ServiceQueue.Core.Business
 {
     class QueueConsumerBusiness
     {
@@ -14,51 +6,37 @@ namespace ServiceQueue.Core.Business
         {
         }
 
-        BlockingCollection<QueueTipoHandler> Queue { get; set; }
+        //private void ManterEmExecucao(QueueTipoHandler tipo)
+        //{
+        //    while (tipo.Pendente.Count > 0 && tipo.Tipo.ConcurrenceLimit > tipo.EmExecucao.Count)
+        //    {
+        //        QueueItem item;
 
-        class QueueTipoHandler : QueueTipo
-        {
-            public QueueTipoHandler()
-            {
-                Pendente = new List<QueueItem>(100);
-                EmExecucao = new List<QueueItem>(100);
-            }
+        //        lock (tipo)
+        //            item = tipo.Pendente.OrderBy(x => x.Recorded).FirstOrDefault();
 
-            public ICollection<QueueItem> Pendente { get; private set; }
-            public ICollection<QueueItem> EmExecucao { get; private set; }
-        }
+        //        if (item != null)
+        //        {
+        //            lock (tipo)
+        //            {
+        //                tipo.Pendente.Remove(item);
+        //                tipo.EmExecucao.Add(item);
+        //            }
 
-        private void ManterEmExecucao(QueueTipoHandler tipo)
-        {
-            while (tipo.Pendente.Count > 0 && tipo.MaximoExecucoesSimultaneas > tipo.EmExecucao.Count)
-            {
-                QueueItem item;
+        //            new Task(() =>
+        //            {
+        //                Executar(item);
 
-                lock (tipo)
-                    item = tipo.Pendente.OrderBy(x => x.Gravado).FirstOrDefault();
+        //                lock (tipo)
+        //                    tipo.EmExecucao.Remove(item);
+        //            }).Start();
+        //        }
+        //    }
+        //}
 
-                if (item != null)
-                {
-                    lock (tipo)
-                    {
-                        tipo.Pendente.Remove(item);
-                        tipo.EmExecucao.Add(item);
-                    }
+        //private void Executar(QueueItem item)
+        //{
 
-                    new Task(() =>
-                    {
-                        Executar(item);
-
-                        lock (tipo)
-                            tipo.EmExecucao.Remove(item);
-                    }).Start();
-                }
-            }
-        }
-
-        private void Executar(QueueItem item)
-        {
-
-        }
+        //}
     }
 }
