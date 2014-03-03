@@ -12,7 +12,7 @@ namespace ServiceQueue.Core.Model.Entity
         public DateTime? Executed { get; set; }
     }
 
-    public class QueueExecutionHistory
+    public class QueueItemHistory
     {
         public Guid Id { get; set; }
         public Guid IdQueueItem { get; set; }
@@ -24,7 +24,29 @@ namespace ServiceQueue.Core.Model.Entity
     public class QueueType
     {
         public Guid Id { get; set; }
+        public string Name { get; set; }
         public int ConcurrenceLimit { get; set; }
         public string Url { get; set; }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
+        public bool Equals(QueueType obj)
+        {
+            return Equals(Id, obj.Id);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is QueueType) return Equals(obj as QueueType);
+            return base.Equals(obj);
+        }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

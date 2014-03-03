@@ -2,7 +2,7 @@
 
 namespace ServiceQueue.Core.Controller
 {
-    public interface IQueueTypeController : ICrud<QueueType>
+    public interface IQueueTypeController : IInsertable<QueueType>, IUpdatable<QueueType>, ISelectableById<QueueType>
     {
     }
 }

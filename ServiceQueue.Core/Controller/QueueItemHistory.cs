@@ -4,24 +4,19 @@ using ServiceQueue.Core.Model.Entity;
 
 namespace ServiceQueue.Core.Controller
 {
-    class QueueItemHistory : IQueueItemHistory
+    class QueueItemHistoryController : IQueueItemHistory
     {
-        public void Insert(QueueExecutionHistory obj)
+        public void Insert(QueueItemHistory obj)
         {
             throw new NotImplementedException();
         }
 
-        public void Update(QueueExecutionHistory obj)
+        public void Update(QueueItemHistory obj)
         {
             throw new NotImplementedException();
         }
-
-        public ICollection<QueueExecutionHistory> SelectAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public QueueExecutionHistory Select(Guid id)
+        
+        public ICollection<QueueItem> SelectPending(Guid idQueueType, int max = 100)
         {
             throw new NotImplementedException();
         }

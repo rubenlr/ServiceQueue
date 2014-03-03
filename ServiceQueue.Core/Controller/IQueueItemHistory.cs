@@ -2,7 +2,7 @@
 
 namespace ServiceQueue.Core.Controller
 {
-    public interface IQueueItemHistory : ICrud<QueueExecutionHistory>
+    public interface IQueueItemHistory : IInsertable<QueueItemHistory>
     {
     }
 }

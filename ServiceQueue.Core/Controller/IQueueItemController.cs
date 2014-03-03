@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ServiceQueue.Core.Controller
 {
-    public interface IQueueItemController : ICrud<QueueItem>
+    public interface IQueueItemController : IInsertable<QueueItem>, IUpdatable<QueueItem>
     {
         ICollection<QueueItem> SelectPending(Guid idQueueType, int max = 100);
     }

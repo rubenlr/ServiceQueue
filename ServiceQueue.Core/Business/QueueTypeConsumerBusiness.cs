@@ -6,11 +6,13 @@ using ServiceQueue.Core.Model.Entity;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
+using log4net;
 
 namespace ServiceQueue.Core.Business
 {
     class QueueTypeConsumerBusiness
     {
+        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IQueueTypeController _queueTypeController;
         private readonly IQueueItemController _queueItemController;
         private QueueType _type;
@@ -29,6 +31,8 @@ namespace ServiceQueue.Core.Business
             _event = new AutoResetEvent(true);
             _pending = new Collection<QueueItem>();
             _executing = new Collection<QueueItem>();
+
+            log.InfoFormat("QueueTypeConsumerBusiness [construtor] para {0}", type);
         }
 
         public void Consume()
@@ -36,7 +40,11 @@ namespace ServiceQueue.Core.Business
             while (_event.WaitOne(10000))
             {
                 if (CountPendingItens() <= _type.ConcurrenceLimit)
-                    PutOnPending(_queueItemController.SelectPending(_type.Id));
+                {
+                    var newPendingItens = _queueItemController.SelectPending(_type.Id);
+                    log.DebugFormat("Fila [{0} {1}] menor que o limite [{2}]. Adicionando {3} itens", _type, CountPendingItens(), _type.ConcurrenceLimit, newPendingItens.Count);
+                    PutOnPending(newPendingItens);
+                }
 
                 while (CountExecuringItens() < _type.ConcurrenceLimit && CountPendingItens() > 0)
                 {
@@ -52,7 +60,11 @@ namespace ServiceQueue.Core.Business
                 }
 
                 if (CountPendingItens() <= MaxQueueSize)
-                    PutOnPending(_queueItemController.SelectPending(_type.Id));
+                {
+                    var newPendingItens = _queueItemController.SelectPending(_type.Id);
+                    log.DebugFormat("Fila [{0} {1}] não está cheia [{2}]. Adicionando {3} itens", _type, CountPendingItens(), MaxQueueSize, newPendingItens.Count);
+                    PutOnPending(newPendingItens);
+                }
 
                 UpdateType();
             }
@@ -62,11 +74,13 @@ namespace ServiceQueue.Core.Business
         {
             try
             {
+                log.InfoFormat("Consumindo item {0}", item.Id);
                 item.Executed = DateTime.Now;
                 _queueItemController.Update(item);
             }
             catch (Exception ex)
             {
+                log.Error(string.Format("Erro durante a execução do item {0}", item.Id), ex);
                 PutOnPending(item);
             }
             finally
